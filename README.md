@@ -1,1 +1,1 @@
-# projet_LAS
+exercise about making a zombie programme used remotely via sockets
