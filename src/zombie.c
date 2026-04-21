@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "../headers/utils.h"
 #include "../headers/shared.h"
@@ -10,7 +11,7 @@
 
 sig_atomic_t useless;
 void sigChildHandler(int sig){
-    wait(&useless);
+    swait(&useless);
 }
 
 int initSocketServer(int port, int backlog);
@@ -21,14 +22,11 @@ int main(int argc, char **argv){
         port = atoi(argv[1]);
     }
 
-    printf("zombie with port %d", port);
-    return 0;
-
     struct sigaction action;
     action.sa_handler = sigChildHandler;
     ssigfillset(&action.sa_mask);
     action.sa_flags = SA_RESTART;
-    int r = sigaction (SIGCHILD, &action, NULL);
+    int r = sigaction (SIGCHLD, &action, NULL);
     checkNeg(r, "Error sigaction");
     
     int sockfd = initSocketServer(port, BACKLOG);
